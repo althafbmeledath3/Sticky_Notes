@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sticky Notes</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+
+    <div class="header">
+        <h1 id="username">Welcome, User</h1>
+        <button class="signout-button" onclick="signout()">Sign Out</button>
+    </div>
+    
+    <button class="plus-button">+</button>
+    
+
+    <script>
+       
+        const colors = ['#ffeb3b', '#ffcc80', '#f48fb1', '#b3e5fc', '#c8e6c9'];
+        let noteCount = 0;
+        const noteWidth = 220; 
+        const noteHeight = 270; 
+        const margin = 10; // Space between notes
+        const startX = 20; // Starting x position
+        const startY = 150; // Starting y position
+
+        function getRandomColor() {
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function getNewNotePosition() {
+            const notes = document.querySelectorAll('.note');
+            if (notes.length === 0) {
+                return { x: startX, y: startY };
+            }
+
+            // Find the latest note
+            let latestNote = null;
+            let maxZIndex = -1;
+            notes.forEach(note => {
+                const zIndex = parseInt(note.style.zIndex) || 0;
+                if (zIndex > maxZIndex) {
+                    maxZIndex = zIndex;
+                    latestNote = note;
+                }
+            });
+
+            const latestX = parseInt(latestNote.style.left) || startX;
+            const latestY = parseInt(latestNote.style.top) || startY;
+
+            let x = latestX + noteWidth + margin;
+            let y = latestY;
+
+            if (x + noteWidth > window.innerWidth - startX) {
+                x = startX;
+                let maxY = startY;
+                notes.forEach(note => {
+                    const noteY = parseInt(note.style.top) || 0;
+                    maxY = Math.max(maxY, noteY);
+                });
+                y = maxY + noteHeight + margin;
+            }
+
+            return { x, y };
+        }
+
+        function createNote() {
+            noteCount++;
+            const note = document.createElement('div');
+            note.className = 'note';
+            note.style.backgroundColor = getRandomColor();
+            const { x, y } = getNewNotePosition();
+            note.style.left = `${x}px`;
+            note.style.top = `${y}px`;
+            note.style.zIndex = noteCount;
+
+            const title = document.createElement('input');
+            title.className = 'note-title';
+            title.placeholder = 'Enter title';
+            note.appendChild(title);
+
+            const content = document.createElement('textarea');
+            content.className = 'note-content';
+            content.placeholder = 'Content';
+            note.appendChild(content);
+
+            document.body.appendChild(note);
+
+            makeDraggable(note, title, content);
+            setupTitleEdit(note, title, content);
+        }
+
+        function makeDraggable(note, title, content) {
+            let isDragging = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+
+            note.addEventListener('mousedown', (e) => {
+                if (e.target === title) return;
+                initialX = e.clientX - currentX;
+                initialY = e.clientY - currentY;
+                isDragging = true;
+                note.className = 'note dragging';
+                note.style.zIndex = ++noteCount;
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    note.style.left = `${currentX}px`;
+                    note.style.top = `${currentY}px`;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                note.className = 'note';
+            });
+
+            note.addEventListener('touchstart', (e) => {
+                if (e.target === title) return;
+                const touch = e.touches[0];
+                initialX = touch.clientX - currentX;
+                initialY = touch.clientY - currentY;
+                isDragging = true;
+                note.className = 'note dragging';
+                note.style.zIndex = ++noteCount;
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (isDragging) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    currentX = touch.clientX - initialX;
+                    currentY = touch.clientY - initialY;
+                    note.style.left = `${currentX}px`;
+                    note.style.top = `${currentY}px`;
+                }
+            });
+
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+                note.className = 'note';
+            });
+
+            currentX = parseInt(note.style.left) || 0;
+            currentY = parseInt(note.style.top) || 0;
+        }
+
+        // Function to try saving the note only when both title and content are non-empty
+        function setupTitleEdit(note, title, content) {
+            title.addEventListener('click', (e) => {
+                e.stopPropagation();
+                title.focus();
+                title.select();
+            });
+
+            function trySave() {
+                const trimmedTitle = title.value.trim();
+                const trimmedContent = content.value.trim();
+
+                // Only save the note if both title and content are non-empty
+                if (trimmedTitle && trimmedContent) {
+                    saveNoteToDatabase( trimmedTitle, trimmedContent);
+                }
+            }
+
+            title.addEventListener('blur', trySave);
+            content.addEventListener('blur', trySave);
+
+            title.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    title.blur();
+                }
+            });
+
+            content.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    content.blur();
+                }
+            });
+        }
+
+        document.querySelector('.plus-button').addEventListener('click', createNote);
+    </script>
+
+    <script src="js/index.js"></script>
+</body>
+</html>

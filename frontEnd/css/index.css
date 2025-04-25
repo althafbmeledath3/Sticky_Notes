@@ -1,0 +1,147 @@
+/* General body styling */
+body {
+    margin: 0;
+    height: 100vh;
+    position: relative;
+    font-family: 'Segoe UI', sans-serif;
+    overflow: auto;
+    background: linear-gradient(to right, #e0f7fa, #fce4ec);
+}
+
+/* Header styling */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background-color: #2C3E50;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+#username {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Signout button */
+.signout-button {
+    padding: 10px 20px;
+    background-color: #E74C3C;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.signout-button:hover {
+    background-color: #C0392B;
+}
+
+/* Plus (+) button styling */
+.plus-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.plus-button:hover {
+    background-color: #45a049;
+}
+
+/* Sticky note container */
+.note {
+    position: absolute;
+    width: 200px;
+    height: 250px;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    user-select: none;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    animation: fadeIn 0.4s ease;
+}
+
+.note:hover {
+    cursor: pointer;
+}
+
+.note.dragging {
+    opacity: 0.8;
+    cursor: grabbing;
+}
+
+/* Note title styling */
+.note-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    border: none;
+    background: transparent;
+    width: 100%;
+    padding: 5px;
+    cursor: text;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.note-title:focus {
+    border: 1px solid #666;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.7);
+    white-space: normal;
+    cursor: text;
+    outline: none;
+}
+
+/* Note content area */
+.note-content {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-size: 14px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.note-content:focus {
+    background: rgba(255, 255, 255, 0.7);
+    outline: none;
+}
+
+/* Smooth fade animation when notes appear */
+@keyframes fadeIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
